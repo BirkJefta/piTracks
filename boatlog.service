@@ -1,0 +1,13 @@
+[Unit]
+Description=Boatlog Service
+After=network.target
+
+[Service]
+User=pi
+WorkingDirectory={{INSTALL_PATH}}
+ExecStart={{INSTALL_PATH}}/venv/bin/python {{INSTALL_PATH}}/boatlog.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
