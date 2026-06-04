@@ -20,6 +20,8 @@ Before running, edit the `config.json` file to match your setup:
 - `signalk_url`: The URL of your local Signal K server.
 - `active_dir`: Path where temporary tracking data is stored.
 
-Have fun. Is very early, and is intended to recieve updates.
+## Other relevant repositories
+https://github.com/BirkJefta/GPXUpload
+
 
 
