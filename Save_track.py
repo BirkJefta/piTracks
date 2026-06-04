@@ -26,7 +26,7 @@ SignalK_url = "http://localhost:3000/signalk/v2/api/resources"
 def load_config():
     config_file = 'config.json'
     if not os.path.exists(config_file):
-        print(f"[!] FEJL: {config_file} ikke fundet. Opret venligst filen.")
+        print(f"error - config file '{config_file}' not found. Please create it with the necessary settings.")
         sys.exit(1)
     with open(config_file, 'r') as f:
         return json.load(f)
