@@ -22,6 +22,6 @@ Before running, edit the `config.json` file to match your setup:
 
 ## Other relevant repositories
 https://github.com/BirkJefta/GPXUpload
-
+https://github.com/BirkJefta/PiUpload
 
 
