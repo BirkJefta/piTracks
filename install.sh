@@ -1,14 +1,16 @@
 #!/bin/bash
 
-# Find den sti hvor install.sh ligger
 INSTALL_PATH=$PWD
+CURRENT_USER=$(whoami)
 
-echo "[*] Installing to: $INSTALL_PATH"
+echo "[*] Installing to: $INSTALL_PATH as user: $CURRENT_USER"
 
-# 1. create the service file from the template, replacing the placeholder with the actual path
-sed -e "s|{{INSTALL_PATH}}|$INSTALL_PATH|g" boatlog.service.template > boatlog.service
 
-# make config file if it doesn't exist
+sed -e "s|{{INSTALL_PATH}}|$INSTALL_PATH|g" \
+    -e "s|{{USER}}|$CURRENT_USER|g" \
+    boatlog.service.template > boatlog.service
+
+
 if [ ! -f "config.json" ]; then
     echo "[*] Creating default config.json..."
     cat <<EOF > config.json
@@ -25,17 +27,16 @@ if [ ! -f "config.json" ]; then
 EOF
 fi
 
-# install dependencies in a virtual environment
+
 sudo apt update
 sudo apt install -y python3-venv
 python3 -m venv venv
+./venv/bin/pip install --upgrade pip
 ./venv/bin/pip install -r requirements.txt
 
-# install the service
 sudo cp boatlog.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable boatlog.service
-sudo systemctl start boatlog.service
+sudo systemctl restart boatlog.service
 
-
-echo "[+] Installation complete!"
+echo "[+] Installation complete and service started!"

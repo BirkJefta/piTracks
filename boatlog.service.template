@@ -3,9 +3,9 @@ Description=Boatlog Service
 After=network.target
 
 [Service]
-User=pi
+User={{USER}}
 WorkingDirectory={{INSTALL_PATH}}
-ExecStart={{INSTALL_PATH}}/venv/bin/python {{INSTALL_PATH}}/boatlog.py
+ExecStart={{INSTALL_PATH}}/venv/bin/python {{INSTALL_PATH}}/save_track.py
 Restart=always
 RestartSec=10
 

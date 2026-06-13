@@ -32,14 +32,16 @@ def load_config():
         return json.load(f)
     
 
-# Hent config og tildel værdier
 config = load_config()
 
-# Globale variabler sat fra config
+
 ACTIVE_DIR = config.get('active_dir', os.path.expanduser("~/.signalk/boatlog_active"))
 SignalK_url = config.get('signalk_url', "http://localhost:3000") + "/signalk/v2/api/resources"
 
-# Thresholds og timing fra config med fallback-værdier
+# Thresholds og timing from config. Default values are set to start recording at 0.5 knots, stop recording at 0.2 knots, 
+# log every 5 seconds, send inactivity notification after 10 minutes and auto stop after 15 minutes of inactivity. 
+# Minimum points to save is set to 1 to avoid saving false tracks, but can be adjusted by the user.
+
 speed_start_threshold = config.get('speed_start_threshold', 0.5)
 speed_stop_threshold = config.get('speed_stop_threshold', 0.2)
 log_interval = config.get('log_interval', 5)
@@ -52,7 +54,7 @@ class BoatlogRecorder:
     def __init__(self):
         self.state = "IDLE" #IDLE, RECORDING, WAITING_FOR_STOP
         self.points = []
-        self.current_trip_name = None
+        self.current_trip_id = None
         self.last_save_time = 0
         self.last_movement_time = time.time()
 
@@ -129,7 +131,6 @@ class BoatlogRecorder:
             self.finalize_trip()
 
     def finalize_trip(self):
-        if len(self.points) == 0: return
         if not self.current_trip_id:
             return
         
@@ -151,7 +152,8 @@ class BoatlogRecorder:
             print(f"[-] TRACK ABORTED: Not enough points ({len(self.points)} < {min_points_to_save})")
             self.send_notification(f"TRACK ABORTED: Not enough points ({len(self.points)} < {min_points_to_save})")
             active_path = os.path.join(ACTIVE_DIR, f"{self.current_trip_id}.json")
-            if os.path.exists(active_path): os.remove(active_path)
+            if os.path.exists(active_path): 
+                os.remove(active_path)
         else:
             final_filename = f"{self.current_trip_id}.json"
 
@@ -170,7 +172,7 @@ class BoatlogRecorder:
                     "times": [p['t'] for p in self.points]
                 }
             }
-            #posts the final track to signalk, tracks-pending.
+            #put the final track to signalk, tracks-pending.
             track_url = f"{SignalK_url}/tracks-pending/{self.current_trip_id}"
             try:
                 response = requests.put(track_url, json=geojson, timeout=5)
@@ -179,10 +181,10 @@ class BoatlogRecorder:
                     self.send_notification(f"TRACK SAVED: {self.current_trip_id}", "normal")
                     if os.path.exists(active_path): os.remove(active_path)
                 else:
-                    print(f"[!] FEJL VED GEMNING AF TRACK: {response.status_code} - {response.text}")
+                    print(f"[!] ERROR SAVING TRACK: {response.status_code} - {response.text}")
                     self.send_notification(f"ERROR SAVING TRACK: {response.status_code}", "error")
             except Exception as err:
-                print(f"[!] NETVÆRKSFEJL VED GEMNING AF TRACK: {err}")
+                print(f"[!]  NETWORK ERROR: {err}")
                 self.send_notification(f"NETWORK ERROR SAVING TRACK: {err}", "error")
             
         self.state = "IDLE"
@@ -211,7 +213,11 @@ def on_message(ws, message):
                         lat = val['value']['latitude']
                         lon = val['value']['longitude']
                     if val['path'] == 'navigation.speedOverGround':
-                        sog = val['value'] * 1.94384
+                        if val['value'] is not None:
+                            sog = val['value'] * 1.94384
+                        else:
+                            sog = 0.0
+                            
                     if val['path'] == 'navigation.datetime':
                         sk_time = val['value']
                         print(f"[*] MODTAGET GPS TID: {sk_time}")
@@ -248,13 +254,3 @@ while True:
     # Vent 5 sekunder før vi prøver at genforbinde
     print("[!] Forbindelse tabt. Prøver igen om 5 sekunder...")
     time.sleep(5)
-
-
-        
-
-
-
-    
-
-
-
