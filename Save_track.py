@@ -129,6 +129,7 @@ class BoatlogRecorder:
             self.finalize_trip()
 
     def finalize_trip(self):
+        if len(self.points) == 0: return
         if not self.current_trip_id:
             return
         
