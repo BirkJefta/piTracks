@@ -9,7 +9,7 @@ Remember to change the config file for your paths and thresholds.
 
 ## Installation
 1. Clone this repository to your boat's computer:
-   `git clone https://github.com/YOUR_USERNAME/boatlog.git`
+   `git clone https://github.com/BirkJefta/boatlog.git`
 2. Navigate to the folder: `cd boatlog`
 3. Run the installation script:
    `sudo ./install.sh`
