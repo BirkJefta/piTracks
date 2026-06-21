@@ -1,3 +1,4 @@
+Intended for raspberry pi
 This program uses Signal K to log gps locations and times. This data is first saved locally, then uploaded to ressources plugin in Signal K. I have called the ressources paths the following: tracks-pending and uploaded-tracks to hopefully not intervene with other programs.
 locally i called the folder: boatlog-active
 the idea is to save in one folder during sailing, then move it to a folder where multiple tracks can be uploaded once internet is possible. Then when uploaded move it to uploaded tracks to not make duplicates.
