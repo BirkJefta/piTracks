@@ -9,8 +9,7 @@ I have however only tried the system as a full system, and on windows. So beware
 Remember to change the config file for your paths and thresholds.
 
 ## Installation
-1. Clone this repository to your boat's computer:
-   `git clone https://github.com/BirkJefta/boatlog.git`
+1. Clone this repository to your boat's computer
 2. Navigate to the folder: `cd boatlog`
 3. Run the installation script:
    `sudo ./install.sh`
